@@ -191,6 +191,13 @@ public class DeployFunction extends CloudSdkMojo {
   Integer maxInstances;
 
   /**
+   * List of secrets key-value pairs to set as environment variables or mounted as files.
+   * All existing secrets will be removed first.
+   */
+  @Parameter(alias = "deploy.setsecrets", property = "function.deploy.setsecrets")
+  Map<String, String> secrets;
+
+  /**
    * List of key-value pairs to set as environment variables. All existing environment variables
    * will be removed first.
    */
@@ -221,6 +228,10 @@ public class DeployFunction extends CloudSdkMojo {
   /** If true, deploys the function in the 2nd Generation Environment. */
   @Parameter(alias = "deploy.gen2", property = "function.deploy.gen2", defaultValue = "false")
   boolean gen2;
+
+  boolean hasSecrets() {
+    return (this.secrets != null && !this.secrets.isEmpty());
+  }
 
   boolean hasEnvVariables() {
     return (this.environmentVariables != null && !this.environmentVariables.isEmpty());
@@ -352,6 +363,10 @@ public class DeployFunction extends CloudSdkMojo {
       commands.add("--max-instances=" + maxInstances);
     }
 
+    if (hasSecrets()) {
+      Joiner.MapJoiner mapJoiner = Joiner.on(",").withKeyValueSeparator("=");
+      commands.add("--set-secrets='" + mapJoiner.join(secrets) + "'");
+    }
     if (hasEnvVariables()) {
       Joiner.MapJoiner mapJoiner = Joiner.on(",").withKeyValueSeparator("=");
       commands.add("--set-env-vars=" + mapJoiner.join(environmentVariables));

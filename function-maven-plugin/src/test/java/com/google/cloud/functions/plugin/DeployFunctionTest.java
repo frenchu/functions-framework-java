@@ -30,6 +30,7 @@ public class DeployFunctionTest {
     mojo.vpcConnector = "a connector";
     mojo.triggerHttp = true;
     mojo.allowUnauthenticated = true;
+    mojo.secrets = ImmutableMap.of("envSecret1", "secret1:latest", "/etc/secret2", "secret2:1");
     mojo.environmentVariables = ImmutableMap.of("env1", "a", "env2", "b");
     mojo.buildEnvironmentVariables = ImmutableMap.of("env1", "a", "env2", "b");
     List<String> expected =
@@ -49,6 +50,7 @@ public class DeployFunctionTest {
             "--timeout=timeout",
             "--vpc-connector=a connector",
             "--max-instances=3",
+            "--set-secrets='envSecret1=secret1:latest,/etc/secret2=secret2:1'",
             "--set-env-vars=env1=a,env2=b",
             "--env-vars-file=myfile",
             "--set-build-env-vars=env1=a,env2=b",
